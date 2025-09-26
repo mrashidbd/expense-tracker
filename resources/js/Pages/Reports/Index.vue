@@ -20,8 +20,8 @@
                             <p class="text-sm text-gray-600">{{ summary.period }}</p>
                         </div>
 
-                        <div class="flex flex-col sm:flex-row gap-4 items-end">
-                            <div class="flex gap-4">
+                        <div class="flex flex-row gap-4">
+                            <div class="flex gap-4 flex-col md:flex-row md:items-end">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                                     <input
@@ -38,13 +38,15 @@
                                         class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#226f54] focus:border-[#226f54]"
                                     />
                                 </div>
+                                <div>
+                                    <button
+                                        @click="applyDateFilter"
+                                        class="px-4 py-2 bg-[#226f54] text-white rounded-lg hover:bg-[#1a5440] transition-colors whitespace-nowrap"
+                                    >
+                                        Update Report
+                                    </button>
+                                </div>
                             </div>
-                            <button
-                                @click="applyDateFilter"
-                                class="px-4 py-2 bg-[#226f54] text-white rounded-lg hover:bg-[#1a5440] transition-colors whitespace-nowrap"
-                            >
-                                Update Report
-                            </button>
                         </div>
                     </div>
 
