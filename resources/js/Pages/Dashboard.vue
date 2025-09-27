@@ -31,7 +31,7 @@
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Total Income</p>
                                 <p class="text-3xl font-bold text-[#87c38f] mt-1">
-                                    ${{ formatCurrency(currentMonth.income) }}
+                                    Tk. {{ formatCurrency(currentMonth.income) }}
                                 </p>
                             </div>
                             <div class="p-3 bg-[#87c38f]/10 rounded-full">
@@ -48,7 +48,7 @@
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Total Expenses</p>
                                 <p class="text-3xl font-bold text-[#da2c38] mt-1">
-                                    ${{ formatCurrency(currentMonth.expense) }}
+                                    Tk. {{ formatCurrency(currentMonth.expense) }}
                                 </p>
                             </div>
                             <div class="p-3 bg-[#da2c38]/10 rounded-full">
@@ -65,7 +65,7 @@
                             <div>
                                 <p class="text-sm font-medium text-gray-600">Net Balance</p>
                                 <p class="text-3xl font-bold mt-1" :class="currentMonth.balance >= 0 ? 'text-[#226f54]' : 'text-[#da2c38]'">
-                                    ${{ formatCurrency(Math.abs(currentMonth.balance)) }}
+                                    Tk. {{ formatCurrency(Math.abs(currentMonth.balance)) }}
                                 </p>
                                 <p class="text-sm mt-1" :class="currentMonth.balance >= 0 ? 'text-[#87c38f]' : 'text-[#da2c38]'">
                                     {{ currentMonth.balance >= 0 ? 'Profit' : 'Loss' }}
@@ -95,7 +95,7 @@
                                             <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: category.color }"></div>
                                             <span class="text-sm text-gray-700">{{ category.category_name }}</span>
                                         </div>
-                                        <span class="text-sm font-medium text-gray-900">${{ formatCurrency(category.total) }}</span>
+                                        <span class="text-sm font-medium text-gray-900">Tk. {{ formatCurrency(category.total) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -109,7 +109,7 @@
                                             <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: category.color }"></div>
                                             <span class="text-sm text-gray-700">{{ category.category_name }}</span>
                                         </div>
-                                        <span class="text-sm font-medium text-gray-900">${{ formatCurrency(category.total) }}</span>
+                                        <span class="text-sm font-medium text-gray-900">Tk. {{ formatCurrency(category.total) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +146,7 @@
                                     </div>
                                 </div>
                                 <span class="font-medium" :class="transaction.type === 'income' ? 'text-[#87c38f]' : 'text-[#da2c38]'">
-                                    {{ transaction.type === 'income' ? '+' : '-' }}${{ formatCurrency(transaction.amount) }}
+                                    {{ transaction.type === 'income' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
                                 </span>
                             </div>
                             <div v-if="recentTransactions.length === 0" class="text-center py-8">
@@ -226,7 +226,8 @@ const maxMonthlyAmount = computed(() => {
 })
 
 const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('bn-BD', {
+        numberingSystem: 'latn',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount)

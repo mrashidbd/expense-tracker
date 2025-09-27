@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.table-items-header{
+    @apply px-2 md:px-6 py-2 md:py-3 text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.table-items-row{
+    @apply px-2 md:px-6 py-2 md:py-4;
+}

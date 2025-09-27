@@ -96,16 +96,16 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div class="text-center">
                                 <p class="text-sm text-gray-600">Total Income</p>
-                                <p class="text-xl font-bold text-[#87c38f]">${{ formatCurrency(totalIncome) }}</p>
+                                <p class="text-xl font-bold text-[#87c38f]">Tk. {{ formatCurrency(totalIncome) }}</p>
                             </div>
                             <div class="text-center">
                                 <p class="text-sm text-gray-600">Total Expenses</p>
-                                <p class="text-xl font-bold text-[#da2c38]">${{ formatCurrency(totalExpense) }}</p>
+                                <p class="text-xl font-bold text-[#da2c38]">Tk. {{ formatCurrency(totalExpense) }}</p>
                             </div>
                             <div class="text-center">
                                 <p class="text-sm text-gray-600">Net Balance</p>
                                 <p class="text-xl font-bold" :class="netBalance >= 0 ? 'text-[#226f54]' : 'text-[#da2c38]'">
-                                    ${{ formatCurrency(Math.abs(netBalance)) }}
+                                    Tk. {{ formatCurrency(Math.abs(netBalance)) }}
                                 </p>
                             </div>
                         </div>
@@ -116,47 +116,53 @@
                         <table class="w-full">
                             <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="table-items-header text-left">Date</th>
+                                <th class="table-items-header text-left hidden md:table-cell">Type</th>
+                                <th class="table-items-header text-left">Category</th>
+                                <th class="table-items-header text-left hidden md:table-cell">Description</th>
+                                <th class="table-items-header text-right">Amount</th>
+                                <th class="table-items-header text-right">Actions</th>
                             </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                             <tr v-for="transaction in transactions.data" :key="transaction.id" class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="table-items-row whitespace-nowrap text-sm text-gray-900">
                                     {{ formatDate(transaction.transaction_date) }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                                               :class="transaction.type === 'income' ? 'bg-[#87c38f]/20 text-[#226f54]' : 'bg-[#da2c38]/20 text-[#da2c38]'">
                                             {{ transaction.type === 'income' ? 'Income' : 'Expense' }}
                                         </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="table-items-row whitespace-nowrap">
                                     <div class="flex items-center gap-2">
                                         <div class="w-3 h-3 rounded-full" :style="{ backgroundColor: transaction.category.color }"></div>
                                         <span class="text-sm text-gray-900">{{ transaction.category.name }}</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                                <td class="table-items-row hidden md:table-cell text-sm text-gray-900 max-w-xs truncate">
                                     {{ transaction.description || '-' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium"
+                                <td class="table-items-row whitespace-nowrap text-sm text-right font-medium"
                                     :class="transaction.type === 'income' ? 'text-[#87c38f]' : 'text-[#da2c38]'">
-                                    {{ transaction.type === 'income' ? '+' : '-' }}${{ formatCurrency(transaction.amount) }}
+                                    {{ transaction.type === 'income' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td class="table-items-row whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
                                         <Link :href="route('transactions.edit', transaction.id)"
                                               class="text-[#226f54] hover:text-[#1a5440] transition-colors">
-                                            Edit
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 21 21"
+                                            class="w-5 h-5">
+                                                <path fill="currentColor" fill-rule="evenodd" d="M3.15 14c-.58 0-1.05-.448-1.05-1V7c0-.552.47-1 1.05-1 .58 0 1.05-.448 1.05-1s-.47-1-1.05-1H2.1C.94 4 0 4.895 0 6v8c0 1.105.94 2 2.1 2h1.05c.58 0 1.05-.448 1.05-1s-.47-1-1.05-1M18.9 4h-7.35c-.58 0-1.05.448-1.05 1s.47 1 1.05 1h6.3c.58 0 1.05.448 1.05 1v6c0 .552-.47 1-1.05 1h-6.3c-.58 0-1.05.448-1.05 1s.47 1 1.05 1h7.35c1.16 0 2.1-.895 2.1-2V6c0-1.105-.94-2-2.1-2m-8.4 15c0 .552-.47 1-1.05 1h-4.2c-.58 0-1.05-.448-1.05-1s.47-1 1.05-1H6.3V2H5.25C4.67 2 4.2 1.552 4.2 1s.47-1 1.05-1h4.2c.58 0 1.05.448 1.05 1s-.47 1-1.05 1H8.4v16h1.05c.58 0 1.05.448 1.05 1"/>
+                                            </svg>
                                         </Link>
                                         <button @click="deleteTransaction(transaction)"
                                                 class="text-[#da2c38] hover:text-[#b91c26] transition-colors">
-                                            Delete
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 0 32 32"
+                                            class="w-5 h-5">
+                                                <path fill="currentColor" fill-rule="evenodd" d="M7 15a1 1 0 0 1 2 0v12a1 1 0 1 1-2 0V15Zm5 0a1 1 0 0 1 2 0v12a1 1 0 1 1-2 0V15Zm5 0a1 1 0 0 1 2 0v12a1 1 0 1 1-2 0V15ZM2 28a4 4 0 0 0 4 4h14a4 4 0 0 0 4-4V12H2v16ZM16 4h-6V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1Zm8 0h-6V2a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v2a2 2 0 0 0 1.999 2h22.003A2 2 0 0 0 26 8V6a2 2 0 0 0-2-2Z"/>
+                                            </svg>
                                         </button>
                                     </div>
                                 </td>
@@ -285,7 +291,8 @@ const totalExpense = computed(() => {
 const netBalance = computed(() => totalIncome.value - totalExpense.value)
 
 const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('bn-BD', {
+        numberingSystem: 'latn',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount)
