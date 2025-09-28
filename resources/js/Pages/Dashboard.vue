@@ -246,3 +246,24 @@ const handleTransactionAdded = () => {
     router.reload({ only: ['currentMonth', 'recentTransactions', 'incomeByCategory', 'expenseByCategory', 'yearlyData'] })
 }
 </script>
+
+
+
+
+https://github.com/mrashidbd/expense-tracker/blob/main/routes/auth.php
+https://github.com/mrashidbd/expense-tracker/blob/main/routes/web.php
+
+https://github.com/mrashidbd/expense-tracker/blob/main/resources/js/composables/useOfflineStore.js
+https://github.com/mrashidbd/expense-tracker/blob/main/resources/js/OfflineManager.js
+
+https://github.com/mrashidbd/expense-tracker/blob/main/app/Http/Controllers/TransactionController.php
+
+https://github.com/mrashidbd/expense-tracker/blob/main/resources/js/Pages/Dashboard.vue
+https://github.com/mrashidbd/expense-tracker/blob/main/resources/js/Components/AddTransactionModal.vue
+
+https://github.com/mrashidbd/expense-tracker/blob/main/resources/js/Pages/Transactions/Create.vue
+
+
+
+
+

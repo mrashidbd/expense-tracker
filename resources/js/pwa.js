@@ -6,7 +6,7 @@ export function registerServiceWorker() {
         window.addEventListener('load', async () => {
             try {
                 const registration = await navigator.serviceWorker.register('/sw.js')
-                console.log('SW registered: ', registration)
+                // console.log('SW registered: ', registration)
 
                 // Handle service worker updates
                 registration.addEventListener('updatefound', () => {
@@ -19,7 +19,7 @@ export function registerServiceWorker() {
                                     showUpdateAvailable()
                                 } else {
                                     // Content is cached for offline use
-                                    console.log('Content is cached for offline use.')
+                                    // console.log('Content is cached for offline use.')
                                 }
                             }
                         })
@@ -83,7 +83,7 @@ export function addPWAMetaTags() {
     // Add meta tags for PWA
     const metaTags = [
         { name: 'theme-color', content: '#226f54' },
-        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
         { name: 'apple-mobile-web-app-title', content: 'ExpenseTracker' },
         { name: 'application-name', content: 'ExpenseTracker' },

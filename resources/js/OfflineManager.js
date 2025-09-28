@@ -166,7 +166,7 @@ class OfflineManager {
         const offlineTransactions = await this.getOfflineTransactions();
         const unsyncedTransactions = offlineTransactions.filter(t => !t.synced);
 
-        console.log(`Syncing ${unsyncedTransactions.length} offline transactions...`);
+        // console.log(`Syncing ${unsyncedTransactions.length} offline transactions...`);
 
         for (const transaction of unsyncedTransactions) {
             try {
@@ -211,7 +211,7 @@ class OfflineManager {
 
         const unsyncedCategories = offlineCategories.filter(c => !c.synced);
 
-        console.log(`Syncing ${unsyncedCategories.length} offline categories...`);
+        // console.log(`Syncing ${unsyncedCategories.length} offline categories...`);
 
         for (const category of unsyncedCategories) {
             try {

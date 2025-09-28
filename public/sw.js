@@ -11,8 +11,33 @@ const STATIC_ASSETS = [
     '/reports',
     '/manifest.json',
     // Add your CSS and JS files here after build
-    '/build/assets/app.css',
-    '/build/assets/app.js'
+    // '/build/assets/app.css',
+    // '/build/assets/app.js',
+    '/build/assets/_plugin-vue_export-helper-DlAUqK2U.js',
+    '/build/assets/app-BEB-IAw6.js',
+    '/build/assets/app-S0fs8JZp.css',
+    '/build/assets/AppLayout-DXcAuxfa.css',
+    '/build/assets/AppLayout-UsbH1mzv.js',
+    '/build/assets/ApplicationLogo-D2GELMLC.js',
+    '/build/assets/ConfirmPassword-Bg_n-gCp.js',
+    '/build/assets/Create-C0VW4fuj.js',
+    '/build/assets/Dashboard-C_LFIcwD.js',
+    '/build/assets/DeleteUserForm-BKsSjeiP.js',
+    '/build/assets/Edit-Br1csTPz.js',
+    '/build/assets/ForgotPassword-Dt7AWuiL.js',
+    '/build/assets/GuestLayout-B9INcOc8.js',
+    '/build/assets/Index-C1FCKw2j.js',
+    '/build/assets/Index-CJJ97JQU.js',
+    '/build/assets/Index-DKD6Jahz.js',
+    '/build/assets/Login-CfXZWAE_.js',
+    '/build/assets/PrimaryButton-DL-hkk-T.js',
+    '/build/assets/Register-CzL8CqnC.js',
+    '/build/assets/ResetPassword-DaXu-bI8.js',
+    '/build/assets/TextInput-CRG-N4OB.js',
+    '/build/assets/UpdatePasswordForm-DJOLmWvp.js',
+    '/build/assets/UpdateProfileInformationForm-qXpkxCII.js',
+    '/build/assets/VerifyEmail-D9UQal_i.js',
+    '/build/assets/Welcome-DzlYw_gV.js'
 ];
 
 // API endpoints to cache
@@ -64,7 +89,7 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - handle requests with cache strategies
 self.addEventListener('fetch', (event) => {
-    const { request } = event;
+    const {request} = event;
     const url = new URL(request.url);
 
     // Skip non-GET requests and external requests
@@ -166,7 +191,7 @@ async function handleStaticAsset(request) {
     } catch (error) {
         console.log('[SW] Failed to fetch static asset:', request.url);
         // Return a basic response or placeholder
-        return new Response('Asset not available offline', { status: 503 });
+        return new Response('Asset not available offline', {status: 503});
     }
 }
 
@@ -233,25 +258,25 @@ function createOfflineResponse(request) {
                 income: 0,
                 expense: 0,
                 balance: 0,
-                month: new Date().toLocaleString('default', { month: 'long' }),
+                month: new Date().toLocaleString('default', {month: 'long'}),
                 year: new Date().getFullYear()
             }
         }), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
+            headers: {'Content-Type': 'application/json'}
         });
     }
 
     if (url.pathname.includes('/categories')) {
-        return new Response(JSON.stringify({ income: [], expense: [] }), {
+        return new Response(JSON.stringify({income: [], expense: []}), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
+            headers: {'Content-Type': 'application/json'}
         });
     }
 
-    return new Response(JSON.stringify({ message: 'Offline mode' }), {
+    return new Response(JSON.stringify({message: 'Offline mode'}), {
         status: 503,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {'Content-Type': 'application/json'}
     });
 }
 
@@ -323,7 +348,7 @@ function createOfflinePage() {
 
     return new Response(offlineHTML, {
         status: 200,
-        headers: { 'Content-Type': 'text/html' }
+        headers: {'Content-Type': 'text/html'}
     });
 }
 
@@ -340,16 +365,16 @@ function openDB() {
 
             // Create object stores
             if (!db.objectStoreNames.contains('api_cache')) {
-                db.createObjectStore('api_cache', { keyPath: 'url' });
+                db.createObjectStore('api_cache', {keyPath: 'url'});
             }
 
             if (!db.objectStoreNames.contains('offline_transactions')) {
-                const store = db.createObjectStore('offline_transactions', { keyPath: 'id', autoIncrement: true });
+                const store = db.createObjectStore('offline_transactions', {keyPath: 'id', autoIncrement: true});
                 store.createIndex('timestamp', 'timestamp');
             }
 
             if (!db.objectStoreNames.contains('offline_categories')) {
-                db.createObjectStore('offline_categories', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('offline_categories', {keyPath: 'id', autoIncrement: true});
             }
         };
     });
@@ -406,7 +431,7 @@ async function syncOfflineData() {
         // Notify main thread about sync completion
         const clients = await self.clients.matchAll();
         clients.forEach(client => {
-            client.postMessage({ type: 'SYNC_COMPLETE' });
+            client.postMessage({type: 'SYNC_COMPLETE'});
         });
 
     } catch (error) {

@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/public/icons/
+/public/logo/
+/public/wp-config.php
+/sql/

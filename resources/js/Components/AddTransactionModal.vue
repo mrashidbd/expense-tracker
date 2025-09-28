@@ -67,7 +67,7 @@
                             </div>
                         </button>
                     </div>
-                    <div v-if="errors.type" class="text-red-500 text-sm mt-1">{{ errors.type }}</div>
+                    <div v-if="form.errors.type" class="text-red-500 text-sm mt-1">{{ form.errors.type }}</div>
                 </div>
 
                 <!-- Amount -->
@@ -85,10 +85,10 @@
                             min="0"
                             placeholder="0.00"
                             class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-[#226f54] focus:border-[#226f54] transition-colors"
-                            :class="{ 'border-red-500': errors.amount }"
+                            :class="{ 'border-red-500': form.errors.amount }"
                         />
                     </div>
-                    <div v-if="errors.amount" class="text-red-500 text-sm mt-1">{{ errors.amount }}</div>
+                    <div v-if="form.errors.amount" class="text-red-500 text-sm mt-1">{{ form.errors.amount }}</div>
                 </div>
 
                 <!-- Category -->
@@ -98,7 +98,7 @@
                         id="category"
                         v-model="form.category_id"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#226f54] focus:border-[#226f54] transition-colors"
-                        :class="{ 'border-red-500': errors.category_id }"
+                        :class="{ 'border-red-500': form.errors.category_id }"
                     >
                         <option value="">Select a category</option>
                         <optgroup v-if="form.type && availableCategories.length > 0" :label="form.type === 'income' ? 'Income Categories' : 'Expense Categories'">
@@ -111,7 +111,7 @@
                             </option>
                         </optgroup>
                     </select>
-                    <div v-if="errors.category_id" class="text-red-500 text-sm mt-1">{{ errors.category_id }}</div>
+                    <div v-if="form.errors.category_id" class="text-red-500 text-sm mt-1">{{ form.errors.category_id }}</div>
                 </div>
 
                 <!-- Description -->
@@ -123,9 +123,9 @@
                         rows="3"
                         placeholder="Add a note about this transaction..."
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#226f54] focus:border-[#226f54] transition-colors resize-none"
-                        :class="{ 'border-red-500': errors.description }"
+                        :class="{ 'border-red-500': form.errors.description }"
                     ></textarea>
-                    <div v-if="errors.description" class="text-red-500 text-sm mt-1">{{ errors.description }}</div>
+                    <div v-if="form.errors.description" class="text-red-500 text-sm mt-1">{{ form.errors.description }}</div>
                 </div>
 
                 <!-- Date -->
@@ -137,9 +137,9 @@
                         type="date"
                         :max="today"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#226f54] focus:border-[#226f54] transition-colors"
-                        :class="{ 'border-red-500': errors.transaction_date }"
+                        :class="{ 'border-red-500': form.errors.transaction_date }"
                     />
-                    <div v-if="errors.transaction_date" class="text-red-500 text-sm mt-1">{{ errors.transaction_date }}</div>
+                    <div v-if="form.errors.transaction_date" class="text-red-500 text-sm mt-1">{{ form.errors.transaction_date }}</div>
                 </div>
 
                 <!-- Buttons -->
@@ -153,10 +153,10 @@
                     </button>
                     <button
                         type="submit"
-                        :disabled="processing"
+                        :disabled="form.processing"
                         class="flex-1 px-4 py-2 bg-[#226f54] text-white rounded-lg hover:bg-[#1a5440] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {{ processing ? 'Adding...' : 'Add Transaction' }}
+                        {{ form.processing ? 'Adding...' : 'Add Transaction' }}
                     </button>
                 </div>
             </form>
@@ -176,7 +176,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, router } from '@inertiajs/vue3'
 import { useOfflineStore } from '@/composables/useOfflineStore.js'
 
 const props = defineProps({
@@ -185,7 +185,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'transaction-added'])
 
-const { isOnline, submitForm } = useOfflineStore()
+const { isOnline, storeTransactionOffline } = useOfflineStore()
 
 const form = useForm({
     type: 'expense',
@@ -195,8 +195,6 @@ const form = useForm({
     transaction_date: new Date().toISOString().split('T')[0]
 })
 
-const processing = ref(false)
-const errors = ref({})
 const showOfflineSuccess = ref(false)
 
 const today = new Date().toISOString().split('T')[0]
@@ -212,40 +210,36 @@ watch(() => form.type, () => {
 })
 
 const submitTransaction = async () => {
-    processing.value = true
-    errors.value = {}
-    showOfflineSuccess.value = false
-
-    try {
-        const result = await submitForm('/transactions', {
-            amount: form.amount,
-            type: form.type,
-            category_id: form.category_id,
-            description: form.description,
-            transaction_date: form.transaction_date
+    if (isOnline.value) {
+        // Use Inertia's form submission for online requests (handles CSRF automatically)
+        form.post(route('transactions.store'), {
+            onSuccess: () => {
+                emit('transaction-added')
+                emit('close')
+            },
+            onError: (errors) => {
+                console.error('Transaction submission failed:', errors)
+            }
         })
+    } else {
+        // Store offline when offline
+        try {
+            await storeTransactionOffline({
+                amount: form.amount,
+                type: form.type,
+                category_id: form.category_id,
+                description: form.description,
+                transaction_date: form.transaction_date
+            })
 
-        if (result.offline) {
-            // Show offline success message
             showOfflineSuccess.value = true
             setTimeout(() => {
                 emit('transaction-added')
                 emit('close')
             }, 2000)
-        } else {
-            // Online success
-            emit('transaction-added')
-            emit('close')
+        } catch (error) {
+            console.error('Failed to save offline transaction:', error)
         }
-    } catch (error) {
-        if (error.response && error.response.data && error.response.data.errors) {
-            errors.value = error.response.data.errors
-        } else {
-            console.error('Transaction submission failed:', error)
-            errors.value = { general: 'Failed to save transaction' }
-        }
-    } finally {
-        processing.value = false
     }
 }
 </script>

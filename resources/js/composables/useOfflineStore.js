@@ -110,6 +110,8 @@ export function useOfflineStore() {
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
         if (csrfToken) {
             defaultOptions.headers['X-CSRF-TOKEN'] = csrfToken
+            data['_token'] = csrfToken
+
         }
 
         if (isOnline.value) {

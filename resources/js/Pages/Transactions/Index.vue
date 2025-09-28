@@ -149,19 +149,19 @@
                                     {{ transaction.type === 'income' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
                                 </td>
                                 <td class="table-items-row whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex justify-end gap-2">
+                                    <div class="flex justify-end gap-4 md:gap-6">
                                         <Link :href="route('transactions.edit', transaction.id)"
                                               class="text-[#226f54] hover:text-[#1a5440] transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -0.5 21 21"
-                                            class="w-5 h-5">
-                                                <path fill="currentColor" fill-rule="evenodd" d="M3.15 14c-.58 0-1.05-.448-1.05-1V7c0-.552.47-1 1.05-1 .58 0 1.05-.448 1.05-1s-.47-1-1.05-1H2.1C.94 4 0 4.895 0 6v8c0 1.105.94 2 2.1 2h1.05c.58 0 1.05-.448 1.05-1s-.47-1-1.05-1M18.9 4h-7.35c-.58 0-1.05.448-1.05 1s.47 1 1.05 1h6.3c.58 0 1.05.448 1.05 1v6c0 .552-.47 1-1.05 1h-6.3c-.58 0-1.05.448-1.05 1s.47 1 1.05 1h7.35c1.16 0 2.1-.895 2.1-2V6c0-1.105-.94-2-2.1-2m-8.4 15c0 .552-.47 1-1.05 1h-4.2c-.58 0-1.05-.448-1.05-1s.47-1 1.05-1H6.3V2H5.25C4.67 2 4.2 1.552 4.2 1s.47-1 1.05-1h4.2c.58 0 1.05.448 1.05 1s-.47 1-1.05 1H8.4v16h1.05c.58 0 1.05.448 1.05 1"/>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
                                         </Link>
                                         <button @click="deleteTransaction(transaction)"
                                                 class="text-[#da2c38] hover:text-[#b91c26] transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 0 32 32"
-                                            class="w-5 h-5">
-                                                <path fill="currentColor" fill-rule="evenodd" d="M7 15a1 1 0 0 1 2 0v12a1 1 0 1 1-2 0V15Zm5 0a1 1 0 0 1 2 0v12a1 1 0 1 1-2 0V15Zm5 0a1 1 0 0 1 2 0v12a1 1 0 1 1-2 0V15ZM2 28a4 4 0 0 0 4 4h14a4 4 0 0 0 4-4V12H2v16ZM16 4h-6V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1Zm8 0h-6V2a2 2 0 0 0-2-2h-6a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v2a2 2 0 0 0 1.999 2h22.003A2 2 0 0 0 26 8V6a2 2 0 0 0-2-2Z"/>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
                                         </button>
                                     </div>
