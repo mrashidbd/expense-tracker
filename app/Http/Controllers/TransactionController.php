@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -79,32 +82,37 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01|max:999999999.99',
-            'type' => 'required|in:income,expense',
-            'description' => 'nullable|string|max:500',
-            'transaction_date' => 'required|date|before_or_equal:today',
+        $request->validate([
             'category_id' => [
                 'required',
-                'exists:categories,id',
-                function ($attribute, $value, $fail) use ($request) {
-                    $category = Category::find($value);
-                    if (!$category || $category->user_id !== auth()->id()) {
-                        $fail('The selected category is invalid.');
-                    }
-                    if ($category && $category->type !== $request->type) {
-                        $fail('The selected category does not match the transaction type.');
-                    }
-                }
-            ]
+                Rule::exists('categories', 'id')->where(function ($query) {
+                    $query->where('user_id', Auth::id());
+                }),
+            ],
+            'type' => 'required|in:income,expense',
+            'amount' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'transaction_date' => 'required|date',
         ]);
 
-        $validated['user_id'] = auth()->id();
+        DB::beginTransaction();
+        try {
+            $transaction = Transaction::create([
+                'user_id' => Auth::id(),
+                'category_id' => $request->category_id,
+                'type' => $request->type,
+                'amount' => $request->amount,
+                'description' => $request->description,
+                'transaction_date' => $request->transaction_date,
+            ]);
 
-        Transaction::create($validated);
-
-        return redirect()->route('transactions.index')
-            ->with('success', 'Transaction created successfully');
+            DB::commit();
+            return redirect()->route('transactions.index')
+                ->with('success', 'Transaction created successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Failed to create transaction.');
+        }
     }
 
     /**
@@ -112,8 +120,8 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        if ($transaction->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$transaction->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $transaction->load('category');
@@ -128,8 +136,8 @@ class TransactionController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        if ($transaction->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$transaction->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $categories = Category::forUser(auth()->id())
@@ -151,8 +159,8 @@ class TransactionController extends Controller
      */
     public function update(Request $request, Transaction $transaction)
     {
-        if ($transaction->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$transaction->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $validated = $request->validate([
@@ -186,8 +194,8 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
-        if ($transaction->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$transaction->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $transaction->delete();

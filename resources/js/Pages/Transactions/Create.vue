@@ -248,20 +248,6 @@ const submitTransaction = () => {
     form.post(route('transactions.store'))
 }
 
-// const submitTransaction = async () => {
-//     // Instead of form.post
-//     try {
-//         const response = await submitForm(
-//             route('transactions.store'),
-//             form.data() // Assuming form.data() gets the form state
-//         )
-//         // Handle success/redirect/etc. based on response
-//         // e.g., if response.offline is true, show the offline message
-//     } catch (error) {
-//         // Handle submission error
-//     }
-// }
-
 const addQuickCategory = async () => {
     if (!quickCategory.name || !form.type) return
 

@@ -11,7 +11,7 @@
                     <!-- Mobile menu button -->
                     <button
                         @click="showMobileMenu = !showMobileMenu"
-                        class="sm:hidden p-2  text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#226f54] focus:ring-offset-2"
+                        class="sm:hidden px-6 py-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#226f54] focus:ring-offset-2"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path v-if="!showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

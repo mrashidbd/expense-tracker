@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -33,8 +34,9 @@ class DashboardController extends Controller
 
         // Recent transactions
         $recentTransactions = Transaction::with('category')
-            ->forUser($userId)
-            ->recent(10)
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->take(10)
             ->get();
 
         // Current month category breakdown for charts

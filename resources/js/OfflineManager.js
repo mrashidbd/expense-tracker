@@ -166,31 +166,26 @@ class OfflineManager {
         const offlineTransactions = await this.getOfflineTransactions();
         const unsyncedTransactions = offlineTransactions.filter(t => !t.synced);
 
-        // console.log(`Syncing ${unsyncedTransactions.length} offline transactions...`);
-
         for (const transaction of unsyncedTransactions) {
             try {
-                // Get CSRF token
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                // Use router.post instead of fetch to handle CSRF properly
+                const { router } = await import('@inertiajs/vue3');
 
-                const response = await fetch('/transactions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(transaction.data)
+                await new Promise((resolve, reject) => {
+                    router.post('/transactions', transaction.data, {
+                        onSuccess: async () => {
+                            await this.markTransactionSynced(transaction.id);
+                            console.log('Synced transaction:', transaction.id);
+                            resolve();
+                        },
+                        onError: (errors) => {
+                            console.error('Failed to sync transaction:', transaction.id, errors);
+                            reject(new Error('Sync failed'));
+                        },
+                        preserveState: true,
+                        preserveScroll: true
+                    });
                 });
-
-                if (response.ok) {
-                    // Mark as synced
-                    await this.markTransactionSynced(transaction.id);
-                    console.log('Synced transaction:', transaction.id);
-                } else {
-                    console.error('Failed to sync transaction:', transaction.id, response.statusText);
-                }
             } catch (error) {
                 console.error('Error syncing transaction:', transaction.id, error);
             }

@@ -78,9 +78,9 @@ class ReportsController extends Controller
             $dailyData[] = [
                 'date' => $currentDate->format('Y-m-d'),
                 'day' => $currentDate->format('M j'),
-                'income' => (float) $dayIncome,
-                'expense' => (float) $dayExpense,
-                'balance' => (float) ($dayIncome - $dayExpense)
+                'income' => (float)$dayIncome,
+                'expense' => (float)$dayExpense,
+                'balance' => (float)($dayIncome - $dayExpense)
             ];
 
             $currentDate->addDay();
@@ -101,9 +101,9 @@ class ReportsController extends Controller
 
             $monthlyData[] = [
                 'month' => $monthStart->format('M Y'),
-                'income' => (float) $monthIncome,
-                'expense' => (float) $monthExpense,
-                'balance' => (float) ($monthIncome - $monthExpense)
+                'income' => (float)$monthIncome,
+                'expense' => (float)$monthExpense,
+                'balance' => (float)($monthIncome - $monthExpense)
             ];
         }
 
@@ -113,9 +113,9 @@ class ReportsController extends Controller
                 'end_date' => $endDate
             ],
             'summary' => [
-                'total_income' => (float) $totalIncome,
-                'total_expense' => (float) $totalExpense,
-                'net_balance' => (float) $netBalance,
+                'total_income' => (float)$totalIncome,
+                'total_expense' => (float)$totalExpense,
+                'net_balance' => (float)$netBalance,
                 'transaction_count' => $transactions->count(),
                 'period' => Carbon::parse($startDate)->format('M j, Y') . ' - ' . Carbon::parse($endDate)->format('M j, Y')
             ],
@@ -125,6 +125,71 @@ class ReportsController extends Controller
             'monthlyData' => $monthlyData,
             'transactions' => $transactions->take(100) // Limit for display
         ]);
+    }
+
+    /**
+     * Preview report as HTML (for development)
+     */
+    public function preview(Request $request)
+    {
+        // Set default date range (current month) if not provided
+        $startDate = $request->get('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->get('end_date', Carbon::now()->endOfMonth()->format('Y-m-d'));
+
+        $userId = auth()->id();
+
+        // Get data for preview (same logic as exportPdf)
+        $transactions = Transaction::with('category')
+            ->where('transactions.user_id', $userId)
+            ->dateRange($startDate, $endDate)
+            ->orderBy('transaction_date', 'desc')
+            ->get();
+
+        $totalIncome = $transactions->where('type', 'income')->sum('amount');
+        $totalExpense = $transactions->where('type', 'expense')->sum('amount');
+        $netBalance = $totalIncome - $totalExpense;
+
+        // Group by categories
+        $incomeByCategory = $transactions
+            ->where('type', 'income')
+            ->groupBy('category_id')
+            ->map(function ($categoryTransactions) {
+                $first = $categoryTransactions->first();
+                return [
+                    'category_name' => $first->category->name,
+                    'total' => $categoryTransactions->sum('amount'),
+                    'count' => $categoryTransactions->count()
+                ];
+            })
+            ->values();
+
+        $expenseByCategory = $transactions
+            ->where('type', 'expense')
+            ->groupBy('category_id')
+            ->map(function ($categoryTransactions) {
+                $first = $categoryTransactions->first();
+                return [
+                    'category_name' => $first->category->name,
+                    'total' => $categoryTransactions->sum('amount'),
+                    'count' => $categoryTransactions->count()
+                ];
+            })
+            ->values();
+
+        $data = [
+            'user' => auth()->user(),
+            'start_date' => Carbon::parse($startDate)->format('M j, Y'),
+            'end_date' => Carbon::parse($endDate)->format('M j, Y'),
+            'transactions' => $transactions,
+            'total_income' => $totalIncome,
+            'total_expense' => $totalExpense,
+            'net_balance' => $netBalance,
+            'income_by_category' => $incomeByCategory,
+            'expense_by_category' => $expenseByCategory
+        ];
+
+        // Return the same view but as HTML instead of PDF
+        return view('reports.pdf', $data);
     }
 
     /**
@@ -195,7 +260,22 @@ class ReportsController extends Controller
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'dejavu sans',
+                'isPhpEnabled' => true,
+                'isJavascriptEnabled' => false,
+                'dpi' => 150,
+                'defaultPaperSize' => 'a4',
+                'margin_top' => 48,
+                'margin_right' => 48,
+                'margin_bottom' => 48,
+                'margin_left' => 48,
+                'chroot' => public_path(),
+                'tempDir' => storage_path('app/temp'),
+                'fontDir' => storage_path('fonts'),
+                'fontCache' => storage_path('fonts'),
+                'isFontSubsettingEnabled' => true,
+                'debugKeepTemp' => true,
             ]);
 
         $filename = 'expense-report-' . $startDate . '-to-' . $endDate . '.pdf';

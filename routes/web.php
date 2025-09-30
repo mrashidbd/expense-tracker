@@ -20,8 +20,7 @@ use App\Http\Controllers\TransactionController;
 
 
 Route::middleware('guest')->group(function () {
-    Route::get('/', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    Route::get('/', [AuthenticatedSessionController::class, 'create']);
 
     Route::post('/', [AuthenticatedSessionController::class, 'store']);
 });
@@ -48,6 +47,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports/export/pdf', [App\Http\Controllers\ReportsController::class, 'exportPdf'])->name('reports.export.pdf');
     Route::get('/reports/export/excel', [App\Http\Controllers\ReportsController::class, 'exportExcel'])->name('reports.export.excel');
     Route::get('/reports/export/csv', [App\Http\Controllers\ReportsController::class, 'exportCsv'])->name('reports.export.csv');
+    
+    // Development route to preview PDF report as HTML
+    Route::get('/reports/preview', [App\Http\Controllers\ReportsController::class, 'preview'])->name('reports.preview');
 
 });
 

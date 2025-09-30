@@ -10,34 +10,36 @@ const STATIC_ASSETS = [
     '/categories',
     '/reports',
     '/manifest.json',
+    '/sw.js',
     // Add your CSS and JS files here after build
-    // '/build/assets/app.css',
-    // '/build/assets/app.js',
     '/build/assets/_plugin-vue_export-helper-DlAUqK2U.js',
-    '/build/assets/app-BEB-IAw6.js',
-    '/build/assets/app-S0fs8JZp.css',
+    '/build/assets/app-B5hEd7SP.css',
+    '/build/assets/app-DjNfpBVB.js',
+    '/build/assets/AppLayout-DC1PB6jC.js',
     '/build/assets/AppLayout-DXcAuxfa.css',
-    '/build/assets/AppLayout-UsbH1mzv.js',
-    '/build/assets/ApplicationLogo-D2GELMLC.js',
-    '/build/assets/ConfirmPassword-Bg_n-gCp.js',
-    '/build/assets/Create-C0VW4fuj.js',
-    '/build/assets/Dashboard-C_LFIcwD.js',
-    '/build/assets/DeleteUserForm-BKsSjeiP.js',
-    '/build/assets/Edit-Br1csTPz.js',
-    '/build/assets/ForgotPassword-Dt7AWuiL.js',
-    '/build/assets/GuestLayout-B9INcOc8.js',
-    '/build/assets/Index-C1FCKw2j.js',
-    '/build/assets/Index-CJJ97JQU.js',
-    '/build/assets/Index-DKD6Jahz.js',
-    '/build/assets/Login-CfXZWAE_.js',
-    '/build/assets/PrimaryButton-DL-hkk-T.js',
-    '/build/assets/Register-CzL8CqnC.js',
-    '/build/assets/ResetPassword-DaXu-bI8.js',
-    '/build/assets/TextInput-CRG-N4OB.js',
-    '/build/assets/UpdatePasswordForm-DJOLmWvp.js',
-    '/build/assets/UpdateProfileInformationForm-qXpkxCII.js',
-    '/build/assets/VerifyEmail-D9UQal_i.js',
-    '/build/assets/Welcome-DzlYw_gV.js'
+    '/build/assets/ApplicationLogo-DgCVl6J8.js',
+    '/build/assets/AuthenticatedLayout-B1jYt7vn.js',
+    '/build/assets/ConfirmPassword-dCKoO0x9.js',
+    '/build/assets/Create-DnesgeTJ.js',
+    '/build/assets/Dashboard-gq0Y9e5x.js',
+    '/build/assets/DeleteUserForm-BO2XyNBG.js',
+    '/build/assets/Edit-DiYtJ9o9.js',
+    '/build/assets/Edit-EYerLy3l.js',
+    '/build/assets/ForgotPassword-ButkW5bf.js',
+    '/build/assets/GuestLayout-DUr6zg-4.js',
+    '/build/assets/Index-BpzSaA4S.js',
+    '/build/assets/Index-DOfo7O7h.js',
+    '/build/assets/Index-OGm6ipZN.js',
+    '/build/assets/Login-D2da3D8L.js',
+    '/build/assets/PrimaryButton-Bly2Loj_.js',
+    '/build/assets/Register-B_9fIKpk.js',
+    '/build/assets/ResetPassword-UO0KUe2n.js',
+    '/build/assets/TextInput-Cj9P9ImU.js',
+    '/build/assets/UpdatePasswordForm-wdr0qG8s.js',
+    '/build/assets/UpdateProfileInformationForm-BxCnCyDe.js',
+    '/build/assets/VerifyEmail-CCtHGxiv.js',
+    '/build/assets/Welcome-Dod79qU7.js',
+    '/build/manifest.json',
 ];
 
 // API endpoints to cache
@@ -219,7 +221,19 @@ async function handlePageRequest(request) {
             return cachedResponse;
         }
 
-        // Return offline page
+        // Try to serve the dashboard as fallback for app pages
+        const url = new URL(request.url);
+        if (url.pathname.startsWith('/transactions') ||
+            url.pathname.startsWith('/categories') ||
+            url.pathname.startsWith('/reports')) {
+
+            const dashboardCache = await cache.match('/dashboard');
+            if (dashboardCache) {
+                return dashboardCache;
+            }
+        }
+
+        // Return offline page only as last resort
         return createOfflinePage();
     }
 }

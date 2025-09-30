@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 
@@ -77,8 +78,8 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         // Ensure the category belongs to the authenticated user
-        if ($category->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$category->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         return Inertia::render('Categories/Show', [
@@ -91,10 +92,12 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        // Ensure the category belongs to the authenticated user
-        if ($category->user_id !== auth()->id()) {
-            abort(404);
+//         Ensure the category belongs to the authenticated user
+        if ((int)$category->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
+
+//        dd($category->user_id);
 
         return Inertia::render('Categories/Edit', [
             'category' => $category
@@ -107,8 +110,8 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         // Ensure the category belongs to the authenticated user
-        if ($category->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$category->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $validated = $request->validate([
@@ -138,8 +141,8 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         // Ensure the category belongs to the authenticated user
-        if ($category->user_id !== auth()->id()) {
-            abort(404);
+        if ((int)$category->user_id !== (int)Auth::id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         // Check if category has transactions
