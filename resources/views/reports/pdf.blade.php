@@ -521,7 +521,7 @@
 
     <!-- Footer -->
     <div class="footer">
-        <p>Generated on {{ now()->format('F d, Y \a\t h:i A') }}</p>
+        <p>Generated on {{ now()->timezone('+06:00')->format('F d, Y \a\t h:i A') }} (GMT+6:00)</p>
         <p>&copy; {{ date('Y') }} Expense Tracker. All rights reserved.</p>
     </div>
 </div>

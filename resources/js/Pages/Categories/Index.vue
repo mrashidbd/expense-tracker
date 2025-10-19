@@ -27,7 +27,7 @@
                 <!-- Categories Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Income Categories -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="bg-green-50 rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
                                 <div class="w-4 h-4 bg-[#87c38f] rounded"></div>
@@ -38,14 +38,14 @@
 
                         <div class="space-y-3">
                             <div v-for="category in incomeCategories" :key="category.id"
-                                 class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
+                                 class="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white">
                                 <div class="flex items-center gap-3">
                                     <div class="w-4 h-4 rounded-full"
                                          :style="{ backgroundColor: category.color }"></div>
                                     <span class="font-medium text-gray-900">{{ category.name }}</span>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    class="flex items-center gap-4">
                                     <button @click="editCategory(category)"
                                             class="text-[#226f54] hover:text-[#1a5440] p-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,10 +74,10 @@
                     </div>
 
                     <!-- Expense Categories -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="bg-red-50 rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                                <div class="w-4 h-4 bg-[#87c38f] rounded"></div>
+                                <div class="w-4 h-4 bg-red-500 rounded"></div>
                                 Expense Categories
                             </h3>
                             <span class="text-sm text-gray-500">{{ expenseCategories.length }} categories</span>
@@ -85,14 +85,14 @@
 
                         <div class="space-y-3">
                             <div v-for="category in expenseCategories" :key="category.id"
-                                 class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group">
+                                 class="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white">
                                 <div class="flex items-center gap-3">
                                     <div class="w-4 h-4 rounded-full"
                                          :style="{ backgroundColor: category.color }"></div>
                                     <span class="font-medium text-gray-900">{{ category.name }}</span>
                                 </div>
                                 <div
-                                    class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    class="flex items-center gap-4 transition-opacity">
                                     <button @click="editCategory(category)"
                                             class="text-[#226f54] hover:text-[#1a5440] p-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,16 +119,17 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
 
         <!-- Add/Edit Category Modal -->
         <div v-if="showAddCategoryModal || editingCategory"
-             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+             class="fixed inset-0 flex items-center justify-center z-50 p-4">
+             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+             @click="closeModal"></div>
+
+            <div class="z-50 relative w-full max-w-lg sm:max-w-xl md:max-w-2xl bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all">
                 <!-- Header -->
                 <div class="flex justify-between items-center p-6 border-b border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-900">

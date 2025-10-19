@@ -41,11 +41,18 @@ class TransactionController extends Controller
             $query->dateRange($request->start_date, $request->end_date);
         }
 
-        // Pagination
-        $perPage = $request->get('per_page', 15);
+        // Calculate totals from ALL filtered transactions (before pagination)
+        $allFilteredTransactions = $query->get();
+        $totalIncome = $allFilteredTransactions->where('type', 'income')->sum('amount');
+        $totalExpense = $allFilteredTransactions->where('type', 'expense')->sum('amount');
+        $netBalance = $totalIncome - $totalExpense;
+
+        // Pagination - 20 per page
+        $perPage = $request->get('per_page', 20);
         $transactions = $query->orderBy('transaction_date', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->appends($request->query());
 
         // Get categories for filter dropdown
         $categories = Category::forUser(auth()->id())
@@ -57,6 +64,12 @@ class TransactionController extends Controller
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
             'categories' => $categories,
+            'totals' => [
+                'total_income' => (float) $totalIncome,
+                'total_expense' => (float) $totalExpense,
+                'net_balance' => (float) $netBalance,
+                'total_count' => $allFilteredTransactions->count()
+            ],
             'filters' => $request->only(['type', 'month', 'year', 'category_id', 'start_date', 'end_date', 'all'])
         ]);
     }
@@ -173,7 +186,7 @@ class TransactionController extends Controller
                 'exists:categories,id',
                 function ($attribute, $value, $fail) use ($request) {
                     $category = Category::find($value);
-                    if (!$category || $category->user_id !== auth()->id()) {
+                    if (!$category || (int)$category->user_id !== (int)auth()->id()) {
                         $fail('The selected category is invalid.');
                     }
                     if ($category && $category->type !== $request->type) {

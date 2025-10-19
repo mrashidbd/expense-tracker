@@ -67,9 +67,6 @@
                                 <p class="text-3xl font-bold mt-1" :class="currentMonth.balance >= 0 ? 'text-[#226f54]' : 'text-[#da2c38]'">
                                     Tk. {{ formatCurrency(Math.abs(currentMonth.balance)) }}
                                 </p>
-                                <p class="text-sm mt-1" :class="currentMonth.balance >= 0 ? 'text-[#87c38f]' : 'text-[#da2c38]'">
-                                    {{ currentMonth.balance >= 0 ? 'Profit' : 'Loss' }}
-                                </p>
                             </div>
                             <div class="p-3 rounded-full" :class="currentMonth.balance >= 0 ? 'bg-[#226f54]/10' : 'bg-[#da2c38]/10'">
                                 <svg class="w-6 h-6" :class="currentMonth.balance >= 0 ? 'text-[#226f54]' : 'text-[#da2c38]'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,8 +156,8 @@
                 <!-- Yearly Overview Chart -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">12-Month Overview</h3>
-                    <div class="h-64 flex items-end justify-between gap-2">
-                        <div v-for="(month, index) in yearlyData" :key="index" class="flex-1 flex flex-col items-center">
+                    <div class="h-64 flex items-end gap-2 overflow-x-auto">
+                        <div v-for="(month, index) in yearlyData" :key="index" class="flex-1 min-w-0 flex flex-col items-center">
                             <div class="w-full flex flex-col gap-1 relative" :style="{ height: '200px' }">
                                 <!-- Income Bar -->
                                 <div class="bg-[#87c38f] rounded-t"
@@ -173,7 +170,7 @@
                                      :title="`Expense: $${formatCurrency(month.expense)}`">
                                 </div>
                             </div>
-                            <span class="text-xs text-gray-600 mt-2 text-center">{{ month.month }}</span>
+                            <span class="text-xs text-gray-600 mt-2 text-center leading-tight break-words">{{ month.month }}</span>
                         </div>
                     </div>
                     <div class="flex justify-center gap-6 mt-4">
@@ -188,15 +185,16 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Add Transaction Modal -->
+                    <!-- Add Transaction Modal -->
         <AddTransactionModal
             v-if="showAddTransactionModal"
             :categories="categories"
             @close="showAddTransactionModal = false"
             @transaction-added="handleTransactionAdded"
         />
+
+        </div>
     </AppLayout>
 </template>
 

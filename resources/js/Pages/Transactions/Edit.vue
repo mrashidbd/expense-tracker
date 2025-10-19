@@ -106,7 +106,7 @@
                                                 type="number"
                                                 id="amount"
                                                 v-model="form.amount"
-                                                step="0.01"
+                                                step="1.00"
                                                 min="0"
                                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 required

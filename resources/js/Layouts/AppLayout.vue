@@ -1,17 +1,16 @@
 <template>
+    <Head :title="title" />
+    
     <div class="min-h-screen bg-gray-50">
-        <!-- Offline Banner -->
-        <OfflineBanner />
-
         <!-- Navigation -->
-        <nav class="bg-white shadow-sm border-b border-gray-200" :class="{ 'mt-16': shouldShowOfflineBanner }">
+        <nav class="bg-white shadow-sm border-b border-gray-200">
             <!-- Rest of your existing navigation code stays the same -->
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <!-- Mobile menu button -->
                     <button
                         @click="showMobileMenu = !showMobileMenu"
-                        class="sm:hidden px-6 py-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#226f54] focus:ring-offset-2"
+                        class="sm:hidden px-6 py-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path v-if="!showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -80,16 +79,6 @@
 
                     <!-- User Menu -->
                     <div class="flex items-center">
-                        <!-- Offline Indicator -->
-                        <div v-if="shouldShowOfflineIndicator" class="mr-2 md:mr-4">
-                            <div class="flex items-center gap-2 px-3 py-1 bg-[#f4f0bb] rounded-full">
-                                <div class="w-2 h-2 rounded-full" :class="isOnline ? 'bg-[#87c38f]' : 'bg-[#da2c38]'"></div>
-                                <span class="text-xs font-medium text-[#43291f]">
-                                    {{ isOnline ? `${offlineTransactionCount} pending` : 'Offline' }}
-                                </span>
-                            </div>
-                        </div>
-
                         <!-- Profile Dropdown -->
                         <div class="relative">
                             <button
@@ -134,12 +123,12 @@
             </div>
 
             <!-- Mobile Navigation Menu -->
-            <div v-show="showMobileMenu" class="sm:hidden border-t border-gray-200">
-                <div class="pt-2 pb-3 space-y-1">
+            <div v-show="showMobileMenu" class="fixed flex justify-center min-h-screen sm:hidden border-t border-gray-200 bg-gray-100">
+                <div class="pt-4 space-y-2">
                     <Link
                         :href="route('dashboard')"
                         :class="[
-                            'block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200',
+                            'block pl-6 pr-8 py-4 border-l-4 text-base font-medium transition-colors duration-200',
                             route().current('dashboard')
                                 ? 'border-[#226f54] text-[#226f54] bg-[#226f54]/5'
                                 : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'
@@ -150,7 +139,7 @@
                     <Link
                         :href="route('transactions.index')"
                         :class="[
-                            'block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200',
+                            'block pl-6 pr-8 py-4 border-l-4 text-base font-medium transition-colors duration-200',
                             route().current('transactions.*')
                                 ? 'border-[#226f54] text-[#226f54] bg-[#226f54]/5'
                                 : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'
@@ -161,7 +150,7 @@
                     <Link
                         :href="route('categories.index')"
                         :class="[
-                            'block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200',
+                            'block pl-6 pr-8 py-4 border-l-4 text-base font-medium transition-colors duration-200',
                             route().current('categories.*')
                                 ? 'border-[#226f54] text-[#226f54] bg-[#226f54]/5'
                                 : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'
@@ -172,7 +161,7 @@
                     <Link
                         :href="route('reports.index')"
                         :class="[
-                            'block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200',
+                            'block pl-6 pr-8 py-4 border-l-4 text-base font-medium transition-colors duration-200',
                             route().current('reports.*')
                                 ? 'border-[#226f54] text-[#226f54] bg-[#226f54]/5'
                                 : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'
@@ -214,9 +203,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { Link } from '@inertiajs/vue3'
-import OfflineBanner from '@/Components/OfflineBanner.vue'
-import { useOfflineStore } from '@/composables/useOfflineStore.js'
+import { Head, Link } from '@inertiajs/vue3'
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 defineProps({
@@ -225,12 +212,6 @@ defineProps({
 
 const showUserMenu = ref(false)
 const showMobileMenu = ref(false)
-
-const { isOnline, offlineTransactionCount, shouldShowOfflineIndicator } = useOfflineStore()
-
-const shouldShowOfflineBanner = computed(() => {
-    return !isOnline.value || offlineTransactionCount.value > 0
-})
 
 onMounted(() => {
     // Close dropdowns when clicking outside

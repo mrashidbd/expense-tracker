@@ -77,7 +77,7 @@
                                     id="amount"
                                     v-model="form.amount"
                                     type="number"
-                                    step="0.01"
+                                    step="1.00"
                                     min="0"
                                     placeholder="0.00"
                                     class="w-full pl-10 pr-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-[#226f54] focus:border-[#226f54] transition-colors"

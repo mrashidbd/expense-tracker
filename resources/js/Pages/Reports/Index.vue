@@ -104,9 +104,6 @@
                                 <p class="text-2xl font-bold mt-1" :class="summary.net_balance >= 0 ? 'text-[#226f54]' : 'text-[#da2c38]'">
                                     ${{ formatCurrency(Math.abs(summary.net_balance)) }}
                                 </p>
-                                <p class="text-sm mt-1" :class="summary.net_balance >= 0 ? 'text-[#87c38f]' : 'text-[#da2c38]'">
-                                    {{ summary.net_balance >= 0 ? 'Profit' : 'Loss' }}
-                                </p>
                             </div>
                             <div class="p-3 rounded-full" :class="summary.net_balance >= 0 ? 'bg-[#226f54]/10' : 'bg-[#da2c38]/10'">
                                 <svg class="w-6 h-6" :class="summary.net_balance >= 0 ? 'text-[#226f54]' : 'text-[#da2c38]'" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -93,7 +93,11 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                     <!-- Summary Bar -->
                     <div class="p-6 border-b border-gray-200">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600">Total Transactions</p>
+                                <p class="text-xl font-bold text-gray-900">{{ props.totals?.total_count || 0 }}</p>
+                            </div>
                             <div class="text-center">
                                 <p class="text-sm text-gray-600">Total Income</p>
                                 <p class="text-xl font-bold text-[#87c38f]">Tk. {{ formatCurrency(totalIncome) }}</p>
@@ -190,8 +194,8 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div v-if="transactions.data.length > 0" class="px-6 py-4 border-t border-gray-200">
-                        <Pagination :links="transactions.links" />
+                    <div v-if="transactions.data.length > 0 && transactions.last_page > 1" class="px-6 py-4 border-t border-gray-200">
+                        <Pagination :links="transactions.links" :pagination="transactions" />
                     </div>
                 </div>
             </div>
@@ -233,12 +237,12 @@
 import { ref, computed, reactive } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import Pagination from '@/Components/Pagination.vue'
 
 const props = defineProps({
     transactions: Object,
     categories: Object,
-    filters: Object
+    filters: Object,
+    totals: Object
 })
 
 const showDeleteModal = ref(false)
@@ -277,18 +281,70 @@ const yearOptions = computed(() => {
 })
 
 const totalIncome = computed(() => {
-    return props.transactions.data
-        .filter(t => t.type === 'income')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0)
+    return props.totals?.total_income || 0
 })
 
 const totalExpense = computed(() => {
-    return props.transactions.data
-        .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0)
+    return props.totals?.total_expense || 0
 })
 
-const netBalance = computed(() => totalIncome.value - totalExpense.value)
+const netBalance = computed(() => {
+    return props.totals?.net_balance || 0
+})
+
+// Pagination logic
+const visiblePages = computed(() => {
+    if (!props.transactions) return []
+    
+    const current = props.transactions.current_page
+    const last = props.transactions.last_page
+    const pages = []
+    
+    if (last <= 7) {
+        // Show all pages if 7 or fewer
+        for (let i = 1; i <= last; i++) {
+            pages.push(i)
+        }
+    } else {
+        // Always show first page
+        pages.push(1)
+        
+        if (current > 4) {
+            pages.push('...')
+        }
+        
+        // Show pages around current page
+        const start = Math.max(2, current - 1)
+        const end = Math.min(last - 1, current + 1)
+        
+        for (let i = start; i <= end; i++) {
+            if (i !== 1 && i !== last) {
+                pages.push(i)
+            }
+        }
+        
+        if (current < last - 3) {
+            pages.push('...')
+        }
+        
+        // Always show last page
+        if (last > 1) {
+            pages.push(last)
+        }
+    }
+    
+    return pages
+})
+
+const getPageUrl = (page) => {
+    if (page === '...' || !props.transactions) return '#'
+    
+    const baseUrl = props.transactions.first_page_url?.split('?')[0] || route('transactions.index')
+    const currentParams = new URLSearchParams(window.location.search)
+    currentParams.set('page', page)
+    
+    return `${baseUrl}?${currentParams.toString()}`
+}
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('bn-BD', {
@@ -332,6 +388,12 @@ const clearFilters = () => {
 }
 
 const showAllTransactions = () => {
+    // Clear all filters to show all transactions
+    filterForm.type = ''
+    filterForm.month = ''
+    filterForm.year = ''
+    filterForm.category_id = ''
+    
     router.get(route('transactions.index'), { all: true }, {
         preserveState: true,
         replace: true

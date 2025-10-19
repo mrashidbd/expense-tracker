@@ -3,15 +3,15 @@
         <div class="flex-1 flex justify-between sm:hidden">
             <!-- Mobile pagination -->
             <Link
-                v-if="links.prev"
-                :href="links.prev"
+                v-if="prevLink && prevLink.url"
+                :href="prevLink.url"
                 class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
                 Previous
             </Link>
             <Link
-                v-if="links.next"
-                :href="links.next"
+                v-if="nextLink && nextLink.url"
+                :href="nextLink.url"
                 class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
             >
                 Next
@@ -34,8 +34,8 @@
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <!-- Previous Page Link -->
                     <Link
-                        v-if="links.prev"
-                        :href="links.prev"
+                        v-if="prevLink && prevLink.url"
+                        :href="prevLink.url"
                         class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                     >
                         <span class="sr-only">Previous</span>
@@ -75,8 +75,8 @@
 
                     <!-- Next Page Link -->
                     <Link
-                        v-if="links.next"
-                        :href="links.next"
+                        v-if="nextLink && nextLink.url"
+                        :href="nextLink.url"
                         class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                     >
                         <span class="sr-only">Next</span>
@@ -104,20 +104,51 @@ import { computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 
 const props = defineProps({
-    links: Object
+    links: Object,
+    pagination: Object
 })
 
 const paginationLinks = computed(() => {
-    if (!props.links || !props.links.data) return []
+    const links = props.links || props.pagination?.links
+    if (!links || !links.data) return []
 
     // Filter out prev/next links and return only page numbers
-    return props.links.data.filter(link =>
+    return links.data.filter(link =>
         link.label !== '&laquo; Previous' &&
-        link.label !== 'Next &raquo;'
+        link.label !== 'Next &raquo;' &&
+        link.label !== 'Previous' &&
+        link.label !== 'Next'
     )
 })
 
-const from = computed(() => props.links?.from || 0)
-const to = computed(() => props.links?.to || 0)
-const total = computed(() => props.links?.total || 0)
+const prevLink = computed(() => {
+    const links = props.links || props.pagination?.links
+    if (!links || !links.data) return null
+    return links.data.find(link => 
+        link.label === '&laquo; Previous' || 
+        link.label === 'Previous'
+    )
+})
+
+const nextLink = computed(() => {
+    const links = props.links || props.pagination?.links
+    if (!links || !links.data) return null
+    return links.data.find(link => 
+        link.label === 'Next &raquo;' || 
+        link.label === 'Next'
+    )
+})
+
+const from = computed(() => {
+    const pagination = props.pagination
+    return pagination?.from || pagination?.links?.from || 0
+})
+const to = computed(() => {
+    const pagination = props.pagination
+    return pagination?.to || pagination?.links?.to || 0
+})
+const total = computed(() => {
+    const pagination = props.pagination
+    return pagination?.total || pagination?.links?.total || 0
+})
 </script>
